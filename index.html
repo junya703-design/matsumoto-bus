@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>まつもとバス いまどこ</title>
+<style>body{margin:0;font:16px/1.5 system-ui,sans-serif;color:#5d636d;display:grid;place-items:center;min-height:100vh}</style>
+</head>
+<body>
+<p id="msg">読み込み中…</p>
+<script>
+// 画面本体は Apps Script（?page=1）から取得し、端末にキャッシュして次回は即表示する。
+// 位置データは本体が Apps Script（?api=1）から約30秒ごとに取得する。
+(function(){
+  var API='https://script.google.com/macros/s/AKfycbwqxLGnUUikDbcgozbdo_oYgeaOwLvRrJn1Poj8kHlqT29t1qk9I0L51-5UuaqV9bw_qw/exec';
+  var KEY='mbus.page', cached=null, shown=false;
+  try{cached=localStorage.getItem(KEY)}catch(e){}
+  function show(h){shown=true;document.open();document.write(h);document.close()}
+  fetch(API+'?page=1',{cache:'no-store'}).then(function(r){return r.text()}).then(function(h){
+    if(h.indexOf('<!DOCTYPE')!==0)throw new Error('bad');
+    try{localStorage.setItem(KEY,h)}catch(e){}
+    if(!shown)show(h);
+  }).catch(function(){if(!shown)document.getElementById('msg').textContent='読み込めませんでした。通信状況を確認して再読み込みしてください。'});
+  if(cached)show(cached);
+})();
+</script>
+</body>
+</html>
