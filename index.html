@@ -21,7 +21,9 @@
     try{localStorage.setItem(KEY,h)}catch(e){}
     if(!shown)show(h);
   }).catch(function(){if(!shown)document.getElementById('msg').textContent='読み込めませんでした。通信状況を確認して再読み込みしてください。'});
-  if(cached)show(cached);
+  // 解析中に document.write すると元のページに追記されるので、解析完了後に差し替える
+  function go(){if(cached&&!shown)show(cached)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
 })();
 </script>
 </body>
